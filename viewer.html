@@ -101,7 +101,7 @@
     <div id="loading"><div class="spinner"></div>Loading model…</div>
 
     <div id="topbar">
-        <div id="instructions">Orbit — drag to rotate, scroll or pinch to zoom</div>
+        <div id="instructions">MODO - ORBIT</div>
         <button id="modeToggle"><span class="dot"></span><span id="modeLabel">MODO CAMINHADA</span></button>
     </div>
 
@@ -259,15 +259,15 @@
                 camera.position.y = WALK_EYE_HEIGHT;
                 camera.rotation.order = 'YXZ';
 
-                modeLabel.textContent = 'Sair modo caminhada';
+                modeLabel.textContent = 'Sair modo caminhada (2xESC)';
                 exitWalkBtn.style.display = 'block';
 
                 if (isTouchDevice) {
-                    instructions.textContent = 'Arraster para visualizar • joystick para caminhar';
+                    instructions.textContent = 'Arrastar para visualizar • joystick para caminhar';
                     joystickZone.style.display = 'block';
                     initJoystick();
                 } else {
-                    instructions.textContent = 'WASD para caminhas • mouse para ver • Esc para sair';
+                    instructions.textContent = 'WASD para caminhar • mouse para ver • Esc para sair';
                     lockHint.style.display = 'flex';
                 }
             } else {
