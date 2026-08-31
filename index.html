@@ -126,14 +126,14 @@
 
         // ---------- config ----------
         const MODEL_PATH = 'github.glb';
-        const WALK_SPEED = 6.0;
-        const WALK_EYE_HEIGHT = 1.7;
+        const WALK_SPEED = 4.0;
+        const WALK_EYE_HEIGHT = 1.5;
 
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
         // ---------- core setup ----------
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x14161a);
+        scene.background = new THREE.Color(0x90d5ff);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.set(5, 4, 8);
@@ -152,7 +152,7 @@
         fillLight.position.set(-10, 5, -10);
         scene.add(fillLight);
 
-        const grid = new THREE.GridHelper(60, 60, 0x2a2d33, 0x1c1e22);
+        const grid = new THREE.GridHelper(60, 60, 0xdddddd, 0xdddddd);
         scene.add(grid);
 
         // ---------- orbit controls (default mode) ----------
