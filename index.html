@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.js"></script>
     <style>
         :root {
-            --panel-bg: rgba(20, 20, 22, 0.72);
+            --panel-bg: rgba(220, 220, 222, 0.72);
             --panel-border: rgba(255, 255, 255, 0.12);
             --text: #eaeaea;
             --text-dim: #9a9a9a;
@@ -16,7 +16,7 @@
         * { box-sizing: border-box; }
         html, body {
             margin: 0; padding: 0; height: 100%; overflow: hidden;
-            background: #0d0d0f; touch-action: none;
+            background: #90D5ff; touch-action: none;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         canvas { display: block; }
@@ -101,13 +101,13 @@
     <div id="loading"><div class="spinner"></div>Loading model…</div>
 
     <div id="topbar">
-        <div id="instructions">Orbit — drag to rotate, scroll or pinch to zoom</div>
-        <button id="modeToggle"><span class="dot"></span><span id="modeLabel">Enter Walk Mode</span></button>
+        <div id="instructions">Orbit — Use o mouse ou os dedos para navegar</div>
+        <button id="modeToggle"><span class="dot"></span><span id="modeLabel">MODO CAMINHADA</span></button>
     </div>
 
-    <div id="lockHint"><span>Click to walk</span></div>
+    <div id="lockHint"><span>Click para caminhar</span></div>
     <div id="joystickZone"></div>
-    <button id="exitWalk">Exit Walk Mode</button>
+    <button id="exitWalk">SAIR DO MODO CAMINHADA</button>
 
     <script type="importmap">
         {
@@ -253,20 +253,20 @@
                 camera.position.y = WALK_EYE_HEIGHT;
                 camera.rotation.order = 'YXZ';
 
-                modeLabel.textContent = 'Exit Walk Mode';
+                modeLabel.textContent = 'SAIR MODO CAMINHADA';
                 exitWalkBtn.style.display = 'block';
 
                 if (isTouchDevice) {
-                    instructions.textContent = 'Drag screen to look • joystick to walk';
+                    instructions.textContent = 'ARRASTE PARA OLHAR • joystick para caminhar';
                     joystickZone.style.display = 'block';
                     initJoystick();
                 } else {
-                    instructions.textContent = 'WASD to walk • mouse to look • Esc to exit';
+                    instructions.textContent = 'WASD para caminhar • mouse para olhar • Esc para sair';
                     lockHint.style.display = 'flex';
                 }
             } else {
                 walk.unlock();
-                modeLabel.textContent = 'Enter Walk Mode';
+                modeLabel.textContent = 'MODO CAMINHADA';
                 instructions.textContent = 'Orbit — drag to rotate, scroll or pinch to zoom';
                 joystickZone.style.display = 'none';
                 exitWalkBtn.style.display = 'none';
@@ -330,15 +330,15 @@
                     walk.moveForward(joystickY * WALK_SPEED * delta);
                     walk.moveRight(joystickX * WALK_SPEED * delta);
                 } else if (walk.isLocked) {
-                    velocity.x -= velocity.x * 10.0 * delta;
-                    velocity.z -= velocity.z * 10.0 * delta;
+                    velocity.x -= velocity.x * 5.0 * delta;
+                    velocity.z -= velocity.z * 5.0 * delta;
 
                     walkDirection.z = Number(keyState.forward) - Number(keyState.backward);
                     walkDirection.x = Number(keyState.right) - Number(keyState.left);
                     walkDirection.normalize();
 
-                    if (keyState.forward || keyState.backward) velocity.z -= walkDirection.z * 40.0 * delta;
-                    if (keyState.left || keyState.right) velocity.x -= walkDirection.x * 40.0 * delta;
+                    if (keyState.forward || keyState.backward) velocity.z -= walkDirection.z * 20.0 * delta;
+                    if (keyState.left || keyState.right) velocity.x -= walkDirection.x * 20.0 * delta;
 
                     walk.moveRight(-velocity.x * delta);
                     walk.moveForward(-velocity.z * delta);
