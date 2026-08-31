@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>3D Building Walkthrough</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; }
+        #joystick-container { position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; z-index: 10; }
+    </style>
+</head>
+<body>
+    <div id="joystick-container"></div>
+
+    <!-- Scripts for Three.js, GLTFLoader, and Joystick library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/nipplejs/0.9.1/nipplejs.min.js"></script>
+
+    <script>
+        // Setup Scene, Camera, Renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting
+        const light = new THREE.AmbientLight(0xffffff, 1.5);
+        scene.add(light);
+
+        // Load your GLB Building
+        const loader = new THREE.GLTFLoader();
+        loader.load('https://github.com/sprjunior/axelengenharia/raw/c409f6d589cbf2caa91e15fbd3404415caff62ac/github.glb', function (gltf) {
+            scene.add(gltf.scene);
+        });
+
+        camera.position.set(0, 5, 10);
+
+        // Virtual Joystick setup for mobile walking
+        const manager = nipplejs.create({
+            zone: document.getElementById('joystick-container'),
+            mode: 'static',
+            position: { left: '60px', bottom: '60px' },
+            color: 'white'
+        });
+
+        let moveForward = 0;
+        let moveTurn = 0;
+
+        manager.on('move', function (evt, data) {
+            const forward = data.vector.y;
+            const turn = data.vector.x;
+            moveForward = forward * 0.1;
+            moveTurn = turn * 0.05;
+        });
+
+        manager.on('end', function () {
+            moveForward = 0;
+            moveTurn = 0;
+        });
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Apply movement based on joystick input
+            camera.translateZ(-moveForward);
+            camera.rotateY(-moveTurn);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
