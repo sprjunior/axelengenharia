@@ -153,6 +153,8 @@
         scene.add(fillLight);
 
         const grid = new THREE.GridHelper(60, 60, 0xdddddd, 0xdddddd);
+        grid.material.transparent = true;
+        grid.material.opacity = 0.5; // 0 = invisível, 1 = sólido
         scene.add(grid);
 
         // ---------- orbit controls (default mode) ----------
