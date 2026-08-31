@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Building Walkthrough</title>
+    <title>Hybrid Building Walkthrough</title>
+    <!-- Include NippleJS for mobile joystick -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #111; }
+        body { margin: 0; overflow: hidden; background-color: #111; touch-action: none; }
         #instructions {
             position: absolute; top: 10px; width: 100%; text-align: center;
             color: white; font-family: sans-serif; pointer-events: none; text-shadow: 1px 1px 2px black;
+            font-size: 14px; padding: 0 10px; box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div id="instructions">Click screen to look around | Use W, A, S, D to walk</div>
+    <div id="instructions">Click screen / Use WASD on PC | Drag joystick / Touch to look on Mobile</div>
 
-    <!-- Import Three.js and the GLTFLoader -->
     <script type="importmap">
         {
             "imports": {
@@ -32,9 +34,13 @@
 
         let camera, scene, renderer, controls;
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let mobileMoveX = 0, mobileMoveY = 0;
         let prevTime = performance.now();
         const velocity = new THREE.Vector3();
         const direction = new THREE.Vector3();
+
+        // Check if device is mobile/touch
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
         init();
         animate();
@@ -51,49 +57,81 @@
             renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
 
-            // Lighting to make sure colors show up
             const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
             scene.add(ambientLight);
             const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
             dirLight.position.set(10, 20, 10);
             scene.add(dirLight);
 
-            // Controls for First-Person WASD view
             controls = new PointerLockControls(camera, document.body);
-            
-            document.body.addEventListener('click', () => {
-                controls.lock();
-            });
 
-            scene.add(controls.getObject());
+            if (!isTouchDevice) {
+                // Desktop Controls
+                document.body.addEventListener('click', () => {
+                    controls.lock();
+                });
 
-            const onKeyDown = (event) => {
-                switch (event.code) {
-                    case 'KeyW': moveForward = true; break;
-                    case 'KeyA': moveLeft = true; break;
-                    case 'KeyS': moveBackward = true; break;
-                    case 'KeyD': moveRight = true; break;
-                }
-            };
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'KeyW') moveForward = true;
+                    if (e.code === 'KeyA') moveLeft = true;
+                    if (e.code === 'KeyS') moveBackward = true;
+                    if (e.code === 'KeyD') moveRight = true;
+                });
 
-            const onKeyUp = (event) => {
-                switch (event.code) {
-                    case 'KeyW': moveForward = false; break;
-                    case 'KeyA': moveLeft = false; break;
-                    case 'KeyS': moveBackward = false; break;
-                    case 'KeyD': moveRight = false; break;
-                }
-            };
+                document.addEventListener('keyup', (e) => {
+                    if (e.code === 'KeyW') moveForward = false;
+                    if (e.code === 'KeyA') moveLeft = false;
+                    if (e.code === 'KeyS') moveBackward = false;
+                    if (e.code === 'KeyD') moveRight = false;
+                });
+            } else {
+                // Mobile Touch & Joystick Controls
+                document.getElementById('instructions').innerText = "Use Joystick to walk | Drag screen to look around";
+                
+                let touchX, touchY;
+                document.addEventListener('touchstart', (e) => {
+                    if (e.target.tagName !== 'CANVAS') return;
+                    touchX = e.touches[0].clientX;
+                    touchY = e.touches[0].clientY;
+                });
 
-            document.addEventListener('keydown', onKeyDown);
-            document.addEventListener('keyup', onKeyUp);
+                document.addEventListener('touchmove', (e) => {
+                    if (!touchX || !touchY || e.target.tagName !== 'CANVAS') return;
+                    let deltaX = e.touches[0].clientX - touchX;
+                    let deltaY = e.touches[0].clientY - touchY;
 
-            // Load your .glb file
+                    camera.rotation.y -= deltaX * 0.005;
+                    camera.rotation.x -= deltaY * 0.005;
+                    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+
+                    touchX = e.touches[0].clientX;
+                    touchY = e.touches[0].clientY;
+                });
+
+                // Create NippleJS Joystick on screen
+                const joystick = nipplejs.create({
+                    zone: document.body,
+                    mode: 'static',
+                    position: { left: '80px', bottom: '80px' },
+                    color: 'white'
+                });
+
+                joystick.on('move', (evt, data) => {
+                    if (data && data.vector) {
+                        mobileMoveX = data.vector.x;
+                        mobileMoveY = data.vector.y;
+                    }
+                });
+
+                joystick.on('end', () => {
+                    mobileMoveX = 0;
+                    mobileMoveY = 0;
+                });
+            }
+
             const loader = new GLTFLoader();
             loader.load('github.glb', (gltf) => {
                 scene.add(gltf.scene);
-            }, undefined, (error) => {
-                console.error('An error happened loading the glb:', error);
             });
 
             window.addEventListener('resize', onWindowResize);
@@ -107,24 +145,29 @@
 
         function animate() {
             requestAnimationFrame(animate);
-
             const time = performance.now();
+            const delta = (time - prevTime) / 1000;
 
-            if (controls.isLocked === true) {
-                const delta = (time - prevTime) / 1000;
+            if (!isTouchDevice) {
+                if (controls.isLocked) {
+                    velocity.x -= velocity.x * 10.0 * delta;
+                    velocity.z -= velocity.z * 10.0 * delta;
 
-                velocity.x -= velocity.x * 10.0 * delta;
-                velocity.z -= velocity.z * 10.0 * delta;
+                    direction.z = Number(moveForward) - Number(moveBackward);
+                    direction.x = Number(moveRight) - Number(moveLeft);
+                    direction.normalize();
 
-                direction.z = Number(moveForward) - Number(moveBackward);
-                direction.x = Number(moveRight) - Number(moveLeft);
-                direction.normalize();
+                    if (moveForward || moveBackward) velocity.z -= direction.z * 40.0 * delta;
+                    if (moveLeft || moveRight) velocity.x -= direction.x * 40.0 * delta;
 
-                if (moveForward || moveBackward) velocity.z -= direction.z * 40.0 * delta;
-                if (moveLeft || moveRight) velocity.x -= direction.x * 40.0 * delta;
-
-                controls.moveRight(-velocity.x * delta);
-                controls.moveForward(-velocity.z * delta);
+                    controls.moveRight(-velocity.x * delta);
+                    controls.moveForward(-velocity.z * delta);
+                }
+            } else {
+                // Apply mobile joystick movement vector
+                const speed = 10.0;
+                controls.moveForward(mobileMoveY * speed * delta);
+                controls.moveRight(mobileMoveX * speed * delta);
             }
 
             prevTime = time;
