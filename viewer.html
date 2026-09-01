@@ -173,6 +173,7 @@
     <script type="module">
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'; //DRACO para arq compactacao
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
@@ -391,7 +392,14 @@
         // ---------- load model ----------
         const loadingEl = document.getElementById('loading');
         const progressEl = document.getElementById('loadProgress');
+       
+        // --- DRACO ---------------------
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+        
         const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
+        
         loader.load(
             MODEL_PATH,
             (gltf) => {
