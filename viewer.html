@@ -334,6 +334,7 @@
             if (walkActive) {
                 camera.position.y = WALK_EYE_HEIGHT;
                 camera.rotation.order = 'YXZ';
+                camera.rotation.z = 0;
 
                 modeLabel.textContent = 'Sair Modo Caminhada';
                 crosshair.style.display = 'block';
