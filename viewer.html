@@ -333,8 +333,11 @@
 
             if (walkActive) {
                 camera.position.y = WALK_EYE_HEIGHT;
+                camera.rotation.set(0, 0, 0); 
                 camera.rotation.order = 'YXZ';
-                camera.rotation.z = 0;
+                if (orbit.target) {
+                    camera.lookAt(orbit.target.x, WALK_EYE_HEIGHT, orbit.target.z);
+                }
 
                 modeLabel.textContent = 'Sair Modo Caminhada';
                 crosshair.style.display = 'block';
