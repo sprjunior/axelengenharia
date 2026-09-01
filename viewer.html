@@ -30,8 +30,8 @@
             z-index: 10;
         }
         #instructions {
-            color: var(--text-dim); font-size: 13px; letter-spacing: 0.01em;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            color: 0x000000; font-size: 13px; letter-spacing: 0.01em;
+            text-shadow: 0 1px 3px rgba(255,255,255,0.6);
         }
         #modeToggle {
             pointer-events: auto;
@@ -167,14 +167,14 @@
         // ---------- config ----------
         const urlParams = new URLSearchParams(window.location.search);
         const MODEL_PATH = urlParams.get('model') || 'github.glb';
-        let WALK_SPEED = 6.0; 
-        let WALK_EYE_HEIGHT = 1.7; 
+        let WALK_SPEED = 4.0; 
+        let WALK_EYE_HEIGHT = 1.5; 
 
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
         // ---------- core setup ----------
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87CEEB); // Cor de fundo céu
+        scene.background = new THREE.Color(0xD1E5F4); // Cor de fundo céu
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.set(5, 4, 8);
@@ -195,7 +195,7 @@
 
         const grid = new THREE.GridHelper(60, 60, 0x2a2d33, 0x1c1e22);
         grid.material.transparent = true;
-        grid.material.opacity = 0.3; // Opacidade alterada para 30%
+        grid.material.opacity = 0.1; // Opacidade alterada para 30%
         scene.add(grid);
 
         // ---------- orbit controls (default mode) ----------
