@@ -33,6 +33,12 @@
             color: 0x000000; font-size: 13px; letter-spacing: 0.01em;
             text-shadow: 0 1px 3px rgba(255,255,255,0.6);
         }
+        /* --- Estilo da Logo --- */
+      .company-logo {
+          height: 28px;
+          width: auto;
+          filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+      }
         #modeToggle {
             pointer-events: auto;
             background: var(--panel-bg);
@@ -133,7 +139,13 @@
     <div id="loading"><div class="spinner"></div>Loading model…<div class="progress" id="loadProgress"></div></div>
 
     <div id="topbar">
-        <div id="instructions">Orbit — drag to rotate, scroll or pinch to zoom</div>
+        <!-- Lado esquerdo com a Logo e as Instruções -->
+        <div style="display: flex; align-items: center; gap: 14px; pointer-events: auto;">
+            <img src="LOGO.png" alt="Logo" class="company-logo">
+            <div id="instructions">Orbit — drag to rotate, scroll or pinch to zoom</div>
+        </div>
+
+        <!-- Lado direito com os botões -->
         <div id="topRightGroup">
             <button id="homeBtn" class="iconBtn" title="Reset view">⌂</button>
             <button id="fullscreenBtn" class="iconBtn" title="Fullscreen">⛶</button>
