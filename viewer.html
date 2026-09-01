@@ -183,7 +183,7 @@
         let WALK_SPEED = 4.0; 
         let WALK_EYE_HEIGHT = 1.5; 
 
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
 
         // ---------- core setup ----------
         const scene = new THREE.Scene();
