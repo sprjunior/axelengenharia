@@ -447,7 +447,7 @@
 
             if (walkActive) {
                 if (isTouchDevice) {
-                    const mobileSpeed = WALK_SPEED * 0.5;
+                    const mobileSpeed = WALK_SPEED * 0.3;
                     walk.moveForward(joystickY * WALK_SPEED * delta);
                     walk.moveRight(joystickX * WALK_SPEED * delta);
                     if (mobileUp) camera.position.y += WALK_SPEED * delta;
